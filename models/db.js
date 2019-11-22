@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const DB_URL = 'mongodb://127.0.0.1:27017/CNB_db';
+const DB_URL = 'mongodb://127.0.0.1:27017/cnb_db';
 
 /**
  * 连接
@@ -20,5 +20,3 @@ db.on('error', () => {
 db.once('open', () => {
   console.log('\x1B[32mMongoose connection success!\x1B[0m')
 });
-
-module.exports = mongoose;
