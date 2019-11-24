@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const secret = require('../utils/config').secret;
 
 router.post('/', (req, res) => {
-  let { usr, pwd } = req.body
+  let { usr, pwd } = req.body.values;
 
   const Owner = require('../models/owner');
   Owner.findOne({ usr, pwd }, (err, doc) => {

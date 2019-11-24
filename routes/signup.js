@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/', (req, res) => {
-  let { usr, email, pwd, rpwd, realname, IDcard, phone, carnum } = req.body;
+  let { usr, email, pwd, rpwd, realname, IDcard, phone, carnum } = req.body.values;
   console.log(JSON.stringify(req.body))
   // 表单验证
   if (!/^\w{5,15}$/.test(usr)) {
