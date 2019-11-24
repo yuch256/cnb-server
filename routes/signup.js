@@ -4,6 +4,7 @@ const router = express.Router();
 router.post('/', (req, res) => {
   let { usr, email, pwd, rpwd, realname, IDcard, phone, carnum } = req.body.values;
   console.log(JSON.stringify(req.body))
+
   // 表单验证
   if (!/^\w{5,15}$/.test(usr)) {
     return res.send({ msg: '用户名格式有误！', state: 'error' });
@@ -52,7 +53,7 @@ router.post('/', (req, res) => {
   });
 
   // 添加用户
-  const newOwner = new Owner({ usr, email, pwd, realname, IDcard, phone, carnum, });
+  const newOwner = new Owner({ usr, email, pwd, realname, IDcard, phone, carnum });
   newOwner.save((err, doc) => {
     if (err) return res.send({ msg: '注册失败!', state: 'error' })
     res.send({ msg: '注册成功!', state: 'success' })
