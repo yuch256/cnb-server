@@ -33,6 +33,8 @@ router.post('/', (req, res) => {
 
   // 用户查重
   const Owner = require('../models/owner');
+
+  // checkOwner(Owner, { email, realname, IDcard, phone, carnum })
   Owner.findOne({ email }, (err, doc) => {
     if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
   });
@@ -56,5 +58,13 @@ router.post('/', (req, res) => {
     res.send({ msg: '注册成功!', state: 'success' })
   });
 });
+
+function checkOwner(model, obj) {
+  for (let [k, v] of Object.entries(obj)) {
+    model.findOne({ k: v }, (err, doc) => {
+      if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
+    });
+  }
+}
 
 module.exports = router;

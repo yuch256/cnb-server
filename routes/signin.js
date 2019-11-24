@@ -9,9 +9,9 @@ router.post('/', (req, res) => {
   Owner.findOne({ usr, pwd }, (err, doc) => {
     if (doc) {
       const t = jwt.sign({ usr, pwd }, secret, { expiresIn: 60 })
-      res.send({ message: '登录成功', status: 'success', token: t })
+      res.send({ msg: '登录成功', status: 'success', token: t })
     } else {
-      res.send({ message: '登录失败', status: 'error' })
+      res.send({ msg: '登录失败', status: 'error' })
     }
   });
 });
