@@ -10,6 +10,7 @@ const app = express();
 
 const signupRouter = require('./routes/signup');
 const signinRouter = require('./routes/signin');
+const claimformRouter = require('./routes/claimform');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,6 +21,7 @@ app.use('/static', express.static(path.join(__dirname, 'public')));
 
 app.use('/signup', signupRouter);
 app.use('/signin', signinRouter);
+app.use('/claimform', claimformRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
