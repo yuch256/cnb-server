@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const formidable = require('formidable');
 const ClaimForm = require('../models/claimForm');
+const fs = require('fs');
 
 var uploadprogress = 0;
 
@@ -23,6 +24,16 @@ router.post('/', (req, res) => {
   //   return res.send({ msg: '表单未填写完整！', state: 'error' });
   // }
 
+  // 根据当前时间、用户创建图片文件夹
+  const currentUsr = '2560'
+  const curPath = `public/img/claimform/${getFileTime()}_${currentUsr}`
+  fs.exists(curPath, (exists) => {
+    if (!exists) fs.mkdir(curPath, (err) => {
+      if (err) console.log(err)
+    });
+  });
+
+  // db model
   let newClaimForm = new ClaimForm({
     usr: '',
     name: '',
@@ -32,7 +43,7 @@ router.post('/', (req, res) => {
   // 处理上传文件
   let form = formidable.IncomingForm();
   form.encoding = 'utf-8';
-  form.uploadDir = 'public/img/claimform';
+  form.uploadDir = imgpath;
   form.keepExtensions = true;
   form.maxFieldsSize = 10 * 1024 * 1024;
   form.maxFields = 30 * 1024 * 1024;
@@ -85,6 +96,20 @@ function checkEmpty(arr) {
     if (item.trim() === '') return false
   }
   return true
+}
+
+function getFileTime(time = new Date()) {
+  y = time.getFullYear();
+  m = toPadStart(time.getMonth() + 1);
+  d = toPadStart(time.getDate());
+  h = toPadStart(time.getHours());
+  f = toPadStart(time.getMinutes());
+  s = toPadStart(time.getSeconds());
+  return y + m + d + h + f + s
+}
+
+function toPadStart(num = 0, min = 2, char = '0') {
+  return num.toString().padStart(min, char);
 }
 
 module.exports = router;
