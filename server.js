@@ -23,6 +23,8 @@ app.use('/signup', signupRouter);
 app.use('/signin', signinRouter);
 app.use('/claimform', claimformRouter);
 
+app.get('/favicon.ico', (req, res) => res.status(204));
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -36,7 +38,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.send('<h1>500</h1>');
 });
 
 module.exports = app;

@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Img = require('./img');
 
 let claimFormSchema = new Schema({
+  usr: String,
   name: String,
   gend: String,
   IDcard: String,
@@ -10,10 +12,16 @@ let claimFormSchema = new Schema({
   birth: String,
   type: String,
   address: String,
-  bill: String,                 // 账单
-  invoice: String,              // 发票
-  siteimg: String,              // 现场图片
-}, { versionKey: false });
+  billimg: [{
+    name: String,
+    path: String,
+    size: String,
+    type: String,
+  }],                 // 账单
+  invoiceimg: [{ name: String, path: String, size: String, type: String }],              // 发票
+  siteimg: [{ name: String, path: String, size: String, type: String }],                 // 现场图片
+  date: String,
+}, { versionKey: false, typeKey: '$type' });
 
 // Model creation
-module.exports = mongoose.model('claimForm', claimFormSchema);
+module.exports = mongoose.model('ClaimForm', claimFormSchema);
