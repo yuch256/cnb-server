@@ -1,3 +1,3 @@
 module.exports = {
-  secret: 'cnb2560',
+  secret_jwt: 'cnb_jwt_2560',
 }

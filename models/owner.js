@@ -5,6 +5,7 @@ let ownerSchema = new Schema({
   usr: String,
   email: String,
   pwd: String,
+  salt: String,
   realname: String,
   IDcard: String,
   phone: String,

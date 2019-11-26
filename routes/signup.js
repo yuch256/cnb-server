@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const encrypt = require('../utils/crypto').encrypt;
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   let { usr, email, pwd, rpwd, realname, IDcard, phone, carnum } = req.body.values;
   console.log(JSON.stringify(req.body))
 
@@ -35,37 +36,29 @@ router.post('/', (req, res) => {
   // 用户查重
   const Owner = require('../models/owner');
 
-  // checkOwner(Owner, { email, realname, IDcard, phone, carnum })
-  Owner.findOne({ email }, (err, doc) => {
-    if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
-  });
-  Owner.findOne({ realname }, (err, doc) => {
-    if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
-  });
-  Owner.findOne({ IDcard }, (err, doc) => {
-    if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
-  });
-  Owner.findOne({ phone }, (err, doc) => {
-    if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
-  });
-  Owner.findOne({ carnum }, (err, doc) => {
-    if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
-  });
+  let doc = null
+  doc = await Owner.findOne({ email })
+  if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
+  doc = await Owner.findOne({ realname })
+  if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
+  doc = await Owner.findOne({ IDcard })
+  if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
+  doc = await Owner.findOne({ phone })
+  if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
+  doc = await Owner.findOne({ carnum })
+  if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
+
+  console.log(2)
+
+  // pwd加密
+  let { r, salt } = await encrypt(pwd);
 
   // 添加用户
-  const newOwner = new Owner({ usr, email, pwd, realname, IDcard, phone, carnum });
+  const newOwner = new Owner({ usr, email, pwd: r, salt, realname, IDcard, phone, carnum });
   newOwner.save((err, doc) => {
     if (err) return res.send({ msg: '注册失败!', state: 'error' })
     res.send({ msg: '注册成功!', state: 'success' })
   });
 });
-
-function checkOwner(model, obj) {
-  for (let [k, v] of Object.entries(obj)) {
-    model.findOne({ k: v }, (err, doc) => {
-      if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
-    });
-  }
-}
 
 module.exports = router;
