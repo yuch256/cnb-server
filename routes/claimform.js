@@ -12,7 +12,8 @@ router.get('/', auth, (req, res) => {
 });
 
 router.post('/', auth, async (req, res) => {
-  let { name, gend, IDcard, money, policy, birth, type, address } = req.body.values;
+  let currentUsr = req.currentUsr;
+  let { name, gend, IDcard, money, insureNum, type, address } = req.body.values;
   console.log(JSON.stringify(req.body))
 
   // 表单验证
@@ -22,7 +23,7 @@ router.post('/', auth, async (req, res) => {
   if (!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(IDcard)) {
     return res.send({ msg: '身份证号格式有误！', state: 'error' });
   }
-  if (checkEmpty([gend, money, birth, type, policy, address, bill, invoice, siteimg])) {
+  if (checkEmpty([gend, money, birth, type, insureNum, address])) {
     return res.send({ msg: '表单未填写完整！', state: 'error' });
   }
 
@@ -32,7 +33,7 @@ router.post('/', auth, async (req, res) => {
   if (doc) return res.send({ msg: '重复提交！', state: 'error' })
 
   // db model
-  let newClaimForm = new ClaimForm({ gend, money, birth, type, policy, address, bill, invoice, siteimg });
+  let newClaimForm = new ClaimForm({ usr: currentUsr, name, gend, IDcard, money, insureNum, type, address });
   newClaimForm.save((err, doc) => {
     if (err) return res.send({ msg: '提交失败!', state: 'error' })
     res.send({ msg: '提交成功!', state: 'success' })
