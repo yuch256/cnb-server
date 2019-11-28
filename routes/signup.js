@@ -48,8 +48,6 @@ router.post('/', async (req, res) => {
   doc = await Owner.findOne({ carnum })
   if (doc) return res.send({ msg: '用户已注册！', state: 'error' })
 
-  console.log(2)
-
   // pwd加密
   let { r, salt } = await encrypt(pwd);
 

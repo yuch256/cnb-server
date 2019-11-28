@@ -81,8 +81,6 @@ typings/
 .nuxt
 
 # react / gatsby 
-# public/
-views/
 
 # vuepress build output
 .vuepress/dist
@@ -97,3 +95,5 @@ views/
 .dynamodb/
 
 # End of https://www.gitignore.io/api/node
+
+/views

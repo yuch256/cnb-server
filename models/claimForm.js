@@ -8,7 +8,7 @@ let claimFormSchema = new Schema({
   gend: String,
   IDcard: String,
   money: String,
-  phone: String,
+  policy: String,
   birth: String,
   type: String,
   address: String,
@@ -20,7 +20,9 @@ let claimFormSchema = new Schema({
   }],                 // 账单
   invoiceimg: [{ name: String, path: String, size: String, type: String }],              // 发票
   siteimg: [{ name: String, path: String, size: String, type: String }],                 // 现场图片
-  date: String,
+  date: {
+    default: new Date
+  },
 }, { versionKey: false, typeKey: '$type' });
 
 // Model creation
