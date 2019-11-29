@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const formidable = require('formidable');
-const ClaimForm = require('../models/claimForm');
 const fs = require('fs');
+
+const ClaimForm = require('../models/claimForm');
 const auth = require('../utils/auth');
 
 var uploadprogress = 0;
@@ -23,13 +24,10 @@ router.post('/', auth, async (req, res) => {
   if (!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(IDcard)) {
     return res.send({ msg: '身份证号格式有误！', state: 'error' });
   }
-  if (checkEmpty([gend, money, birth, type, insureNum, address])) {
-    return res.send({ msg: '表单未填写完整！', state: 'error' });
-  }
 
   // 验证表单唯一
   let doc = null
-  doc = await Owner.findOne({ policy })
+  doc = await ClaimForm.findOne({ insureNum })
   if (doc) return res.send({ msg: '重复提交！', state: 'error' })
 
   // db model
@@ -43,12 +41,21 @@ router.post('/', auth, async (req, res) => {
 router.post('/invoice', async (req, res) => {
   // 根据当前时间、用户创建图片文件夹
   const currentUsr = '2560';
-  const curPath = `public/img/claimform/${getCurrentTime()}_${currentUsr}`;
+  let curPath = `public/img/claimform/${getCurrentTime()}_${currentUsr}`;
   let exists = fs.existsSync(curPath);
   if (!exists) fs.mkdir(curPath, (err) => {
     if (err) console.log(err)
+    fs.mkdir(`${curPath}/invoice`, (err) => {
+      if (err) console.log(err)
+      // let newClaimForm = new ClaimForm({})
+      upload()
+    });
   });
+});
 
+
+
+function upload() {
   // 处理上传文件
   let form = formidable.IncomingForm();
   form.encoding = 'utf-8';
@@ -58,17 +65,16 @@ router.post('/invoice', async (req, res) => {
   form.maxFields = 30 * 1024 * 1024;
 
   let uploadprogress = 0;
+  let allFile = [];
   console.log('start:upload----' + uploadprogress);
-
-  form.parse(req);
 
   form
     .on('field', function (field, value) {
       console.log(field + ':' + value);         // 上传的参数数据
-      // newClaimForm[field] = value;
     })
     .on('file', function (field, file) {        // 上传的文件数据
-      console.log(file.path)
+      console.log(file)
+      allFile.push(file);
     })
     .on('progress', function (bytesReceived, bytesExpected) {
       uploadprogress = bytesReceived / bytesExpected * 100;         // 计算上传进度
@@ -76,36 +82,25 @@ router.post('/invoice', async (req, res) => {
     .on('end', function () {
       // 上传完成
       console.log('-> upload done\n');
-      // console.log(fields)
       res.send({ data: 'ok', state: 'success' });
     })
     .on('error', function (err) {
       console.log('上传失败：' + err);
       res.send({ msg: '上传失败', state: 'error' });
     })
-  // .parse(req, function (err, fields, files) {
-  //   if (err) console.log(err)
-  //   allFile.forEach(file => {
-  //     newClaimForm.billimg.push({
-  //       name: file.name.split('.')[0],
-  //       path: file.path,
-  //       size: file.size,
-  //       type: file.type,
-  //     })
-  //   });
-  //   console.log(newClaimForm)
-  // });
-
-  function addClaimForm() {
-
-  }
-});
-
-function checkEmpty(arr) {
-  for (let item of arr) {
-    if (item.trim() === '') return false
-  }
-  return true
+    .parse(req, function (err, fields, files) {
+      if (err) console.log(err)
+      // let doc = await ClaimForm.findOne({})
+      // allFile.forEach(file => {
+      //   newClaimForm.billimg.push({
+      //     name: file.name.split('.')[0],
+      //     path: file.path,
+      //     size: file.size,
+      //     type: file.type,
+      //   })
+      // });
+      // console.log(newClaimForm)
+    });
 }
 
 function getCurrentTime(time = new Date()) {
