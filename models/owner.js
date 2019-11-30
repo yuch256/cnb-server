@@ -10,6 +10,10 @@ let ownerSchema = new Schema({
   IDcard: String,
   phone: String,
   carnum: String,
+  date: {
+    type: Date,
+    default: Date.now
+  }
 }, { versionKey: false });
 
 /**

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Img = require('./img');
 
 let claimFormSchema = new Schema({
   usr: String,
@@ -11,14 +10,24 @@ let claimFormSchema = new Schema({
   insureNum: String,
   type: String,
   address: String,
-  // billimg: [{
-  //   name: String,
-  //   path: String,
-  //   size: String,
-  //   type: String,
-  // }],                 // 账单
-  // invoiceimg: [{ name: String, path: String, size: String, type: String }],              // 发票
-  // siteimg: [{ name: String, path: String, size: String, type: String }],                 // 现场图片
+  img: {
+    bill: [
+      {
+        name: String,
+        path: String,
+        size: String,
+        Type: String,
+      }
+    ],
+    invoice: [
+      {
+        name: String,
+        path: String,
+        size: String,
+        Type: String,
+      }
+    ]
+  },
   date: {
     type: Date,
     default: Date.now

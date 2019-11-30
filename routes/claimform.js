@@ -9,36 +9,10 @@ const auth = require('../utils/auth');
 var uploadprogress = 0;
 
 router.get('/', auth, (req, res) => {
-  res.send({ state: 'success' })
+  res.send({ currentUsr: req.currentUsr, state: 'success' })
 });
 
-router.post('/', auth, async (req, res) => {
-  let currentUsr = req.currentUsr;
-  let { name, gend, IDcard, money, insureNum, type, address } = req.body.values;
-  console.log(JSON.stringify(req.body))
-
-  // 表单验证
-  if (!/^[\u4e00-\u9fa5]{0,5}[\u4e00-\u9fa5·]{2}[\u4e00-\u9fa5]{0,5}$/.test(name)) {
-    return res.send({ msg: '姓名格式有误！', state: 'error' });
-  }
-  if (!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(IDcard)) {
-    return res.send({ msg: '身份证号格式有误！', state: 'error' });
-  }
-
-  // 验证表单唯一
-  let doc = null
-  doc = await ClaimForm.findOne({ insureNum })
-  if (doc) return res.send({ msg: '重复提交！', state: 'error' })
-
-  // db model
-  let newClaimForm = new ClaimForm({ usr: currentUsr, name, gend, IDcard, money, insureNum, type, address });
-  newClaimForm.save((err, doc) => {
-    if (err) return res.send({ msg: '提交失败!', state: 'error' })
-    res.send({ msg: '提交成功!', state: 'success' })
-  });
-});
-
-router.post('/invoice', async (req, res) => {
+router.post('/', async (req, res) => {
   // 根据当前时间、用户创建图片文件夹
   const currentUsr = '2560';
   let curPath = `public/img/claimform/${getCurrentTime()}_${currentUsr}`;
@@ -48,32 +22,35 @@ router.post('/invoice', async (req, res) => {
     fs.mkdir(`${curPath}/invoice`, (err) => {
       if (err) console.log(err)
       // let newClaimForm = new ClaimForm({})
-      upload()
+      upload(req, res, `${curPath}/invoice`)
     });
   });
 });
 
 
 
-function upload() {
+function upload(req, res, curPath) {
   // 处理上传文件
   let form = formidable.IncomingForm();
   form.encoding = 'utf-8';
   form.uploadDir = curPath;
   form.keepExtensions = true;
-  form.maxFieldsSize = 10 * 1024 * 1024;
-  form.maxFields = 30 * 1024 * 1024;
+  form.maxFieldsSize = 2 * 1024 * 1024;
+  form.maxFields = 20 * 1024 * 1024;
+  // 初始化理赔model
+  let newClaimForm = new ClaimForm()
 
   let uploadprogress = 0;
   let allFile = [];
   console.log('start:upload----' + uploadprogress);
 
   form
-    .on('field', function (field, value) {
-      console.log(field + ':' + value);         // 上传的参数数据
+    .on('field', function (field, value) {      // 上传的参数数据
+      newClaimForm[field] = value;
+      console.log(field + ':' + value);
     })
     .on('file', function (field, file) {        // 上传的文件数据
-      console.log(file)
+      console.log(field)
       allFile.push(file);
     })
     .on('progress', function (bytesReceived, bytesExpected) {
@@ -82,25 +59,23 @@ function upload() {
     .on('end', function () {
       // 上传完成
       console.log('-> upload done\n');
-      res.send({ data: 'ok', state: 'success' });
+      allFile.forEach(file => {
+        let { name, path, size, type } = file;
+        let invoice = newClaimForm.img.invoice;
+        invoice.push({ name, path, size, Type: type });
+        newClaimForm.img.invoice = invoice;
+      });
+      newClaimForm.save((err, doc) => {
+        if (err) return console.log(err)
+        console.log(JSON.stringify(doc))
+        res.send({ state: 'success' });
+      });
     })
     .on('error', function (err) {
       console.log('上传失败：' + err);
       res.send({ msg: '上传失败', state: 'error' });
     })
-    .parse(req, function (err, fields, files) {
-      if (err) console.log(err)
-      // let doc = await ClaimForm.findOne({})
-      // allFile.forEach(file => {
-      //   newClaimForm.billimg.push({
-      //     name: file.name.split('.')[0],
-      //     path: file.path,
-      //     size: file.size,
-      //     type: file.type,
-      //   })
-      // });
-      // console.log(newClaimForm)
-    });
+    .parse(req);
 }
 
 function getCurrentTime(time = new Date()) {
