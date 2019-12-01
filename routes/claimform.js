@@ -6,24 +6,20 @@ const fs = require('fs');
 const ClaimForm = require('../models/claimForm');
 const auth = require('../utils/auth');
 
-var uploadprogress = 0;
+let uploadprogress = 0;
 
 router.get('/', auth, (req, res) => {
-  res.send({ currentUsr: req.currentUsr, state: 'success' })
+  res.send({ usr: req.curUsr, state: 'success' });
 });
 
 router.post('/', async (req, res) => {
   // 根据当前时间、用户创建图片文件夹
-  const currentUsr = '2560';
-  let curPath = `public/img/claimform/${getCurrentTime()}_${currentUsr}`;
+  const curUsr = '2560';
+  let curPath = `public/img/claimform/${getCurrentTime()}_${curUsr}`;
   let exists = fs.existsSync(curPath);
   if (!exists) fs.mkdir(curPath, (err) => {
     if (err) console.log(err)
-    fs.mkdir(`${curPath}/invoice`, (err) => {
-      if (err) console.log(err)
-      // let newClaimForm = new ClaimForm({})
-      upload(req, res, `${curPath}/invoice`)
-    });
+    else upload(req, res, curPath)
   });
 });
 
@@ -34,48 +30,56 @@ function upload(req, res, curPath) {
   let form = formidable.IncomingForm();
   form.encoding = 'utf-8';
   form.uploadDir = curPath;
-  form.keepExtensions = true;
-  form.maxFieldsSize = 2 * 1024 * 1024;
-  form.maxFields = 20 * 1024 * 1024;
+  form.keepExtensions = true;                      // 保留文件后缀
+  form.maxFieldsSize = 2 * 1024 * 1024;            // 限制单个文件大小
+  form.maxFields = 20 * 1024 * 1024;               // 限制所有文件大小总和
   // 初始化理赔model
   let newClaimForm = new ClaimForm()
 
   let uploadprogress = 0;
   let allFile = [];
+  let divide = 0;
   console.log('start:upload----' + uploadprogress);
+
+  form.parse(req);                              // 加上回调可以在这里做文件重命名之类的
 
   form
     .on('field', function (field, value) {      // 上传的参数数据
-      newClaimForm[field] = value;
+      if (field === 'divide') divide = value;   // 两种图片site和invoice的分界
+      else newClaimForm[field] = value;
       console.log(field + ':' + value);
     })
     .on('file', function (field, file) {        // 上传的文件数据
-      console.log(field)
       allFile.push(file);
     })
     .on('progress', function (bytesReceived, bytesExpected) {
       uploadprogress = bytesReceived / bytesExpected * 100;         // 计算上传进度
     })
-    .on('end', function () {
-      // 上传完成
+    .on('end', function () {                    // 上传完成
       console.log('-> upload done\n');
-      allFile.forEach(file => {
+      allFile.forEach((file, index) => {        // 遍历上传文件存入model
         let { name, path, size, type } = file;
-        let invoice = newClaimForm.img.invoice;
-        invoice.push({ name, path, size, Type: type });
-        newClaimForm.img.invoice = invoice;
+        size = `${(size / 1024).toFixed(2)}KB`
+        if (index < divide) {                   // 第一种图片invoice
+          let invoice = newClaimForm.img.invoice;
+          invoice.push({ name, path, size, Type: type });
+          newClaimForm.img.invoice = invoice;
+        } else {
+          let site = newClaimForm.img.site;
+          site.push({ name, path, size, Type: type });
+          newClaimForm.img.site = site;
+        }
       });
-      newClaimForm.save((err, doc) => {
+      newClaimForm.save((err, doc) => {         // model存入db
         if (err) return console.log(err)
-        console.log(JSON.stringify(doc))
+        console.log(JSON.stringify(doc, null, 2))
         res.send({ state: 'success' });
       });
     })
     .on('error', function (err) {
-      console.log('上传失败：' + err);
+      console.log(err);
       res.send({ msg: '上传失败', state: 'error' });
-    })
-    .parse(req);
+    });
 }
 
 function getCurrentTime(time = new Date()) {
@@ -88,7 +92,7 @@ function getCurrentTime(time = new Date()) {
   return y + m + d + h + f + s
 }
 
-function toPadStart(num = 0, min = 2, char = '0') {
+function toPadStart(num, min = 2, char = '0') {
   return num.toString().padStart(min, char);
 }
 

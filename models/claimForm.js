@@ -7,18 +7,11 @@ let claimFormSchema = new Schema({
   gend: String,
   IDcard: String,
   money: String,
+  phone: String,
   insureNum: String,
   type: String,
   address: String,
   img: {
-    bill: [
-      {
-        name: String,
-        path: String,
-        size: String,
-        Type: String,
-      }
-    ],
     invoice: [
       {
         name: String,
@@ -26,7 +19,15 @@ let claimFormSchema = new Schema({
         size: String,
         Type: String,
       }
-    ]
+    ],
+    site: [
+      {
+        name: String,
+        path: String,
+        size: String,
+        Type: String,
+      }
+    ],
   },
   date: {
     type: Date,

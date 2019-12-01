@@ -13,7 +13,7 @@ module.exports = function (req, res, next) {
         console.log(err)
         res.status(401).json({ errors: { global: "Invalid token" } });
       } else {
-        req.currentUser = decoded.usr;
+        req.curUsr = decoded.usr;
         next();
       }
     });
