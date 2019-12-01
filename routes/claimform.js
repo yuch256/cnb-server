@@ -12,7 +12,7 @@ router.get('/', auth, (req, res) => {
   res.send({ usr: req.curUsr, state: 'success' });
 });
 
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
   // 根据当前时间、用户创建图片文件夹
   const curUsr = '2560';
   let curPath = `public/img/claimform/${getCurrentTime()}_${curUsr}`;

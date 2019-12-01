@@ -2,19 +2,22 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let ownerSchema = new Schema({
-  usr: String,
-  email: String,
-  pwd: String,
-  salt: String,
-  realname: String,
-  IDcard: String,
-  phone: String,
-  carnum: String,
-  date: {
-    type: Date,
-    default: Date.now
-  }
-}, { versionKey: false });
+  usr: { type: String, required: true },
+  email: { type: String, required: true },
+  pwd: { type: String, required: true },
+  salt: { type: String, required: true },
+  realname: { type: String, required: true },
+  IDcard: { type: String, required: true },
+  phone: { type: String, required: true },
+  carnum: { type: String, required: true },
+  // date: {
+  //   type: Date,
+  //   default: Date.now
+  // }
+}, {
+  versionKey: false,
+  timestamps: true
+});
 
 /**
  * Methods: add to document (newUser.addUser())
