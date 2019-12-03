@@ -10,7 +10,8 @@ const app = express();
 
 const signupRouter = require('./routes/signup');
 const signinRouter = require('./routes/signin');
-const claimformRouter = require('./routes/claimform');
+const claimformRouter = require('./routes/owner/claimform');
+const ownerformlistRouter = require('./routes/owner/formlist');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,6 +23,7 @@ app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use('/signup', signupRouter);
 app.use('/signin', signinRouter);
 app.use('/claimform', claimformRouter);
+app.use('/owner/formlist', ownerformlistRouter);
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 

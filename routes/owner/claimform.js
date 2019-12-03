@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 const formidable = require('formidable');
 const fs = require('fs');
-const auth = require('../utils/auth');
 
-const ClaimForm = require('../models/claimForm');
-const auth = require('../utils/auth');
+const ClaimForm = require('../../models/owner/claimForm');
+const auth = require('../../utils/auth');
 
 let uploadprogress = 0;
 
@@ -15,7 +14,8 @@ router.get('/', auth, (req, res) => {
 
 router.post('/', auth, (req, res) => {
   // 根据当前时间、用户创建图片文件夹
-  const curUsr = '2560';
+  // const curUsr = '2560';
+  const curUsr = req.curUsr;
   let curPath = `public/img/claimform/${getCurrentTime()}_${curUsr}`;
   let exists = fs.existsSync(curPath);
   if (!exists) fs.mkdir(curPath, (err) => {

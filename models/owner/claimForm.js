@@ -15,7 +15,8 @@ let claimFormSchema = new Schema({
   name: { type: String, required: true },
   gend: { type: String, required: true },
   IDcard: { type: String, required: true },
-  money: { type: String, required: true },
+  reqmoney: { type: String, required: true },
+  actmoney: { type: String },
   phone: { type: String, required: true },
   insureNum: { type: String, required: true, unique: true },
   type: { type: String, required: true },
@@ -41,7 +42,7 @@ let claimFormSchema = new Schema({
   process: {
     type: Number,
     default: 1,
-  }
+  },
 }, {
   versionKey: false,
   timestamps: true
