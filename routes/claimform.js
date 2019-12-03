@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const formidable = require('formidable');
 const fs = require('fs');
+const auth = require('../utils/auth');
 
 const ClaimForm = require('../models/claimForm');
 const auth = require('../utils/auth');
@@ -12,7 +13,7 @@ router.get('/', auth, (req, res) => {
   res.send({ usr: req.curUsr, state: 'success' });
 });
 
-router.post('/', (req, res) => {
+router.post('/', auth, (req, res) => {
   // 根据当前时间、用户创建图片文件夹
   const curUsr = '2560';
   let curPath = `public/img/claimform/${getCurrentTime()}_${curUsr}`;
