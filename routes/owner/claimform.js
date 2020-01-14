@@ -9,7 +9,7 @@ const auth = require('../../utils/auth');
 let uploadprogress = 0;
 
 router.get('/', auth, (req, res) => {
-  res.send({ usr: req.curUsr, state: 'success' });
+  res.send({ usr: req.curUsr, code: 1 });
 });
 
 router.post('/', auth, (req, res) => {
@@ -23,8 +23,6 @@ router.post('/', auth, (req, res) => {
     else upload(req, res, curPath)
   });
 });
-
-
 
 function upload(req, res, curPath) {
   // 处理上传文件

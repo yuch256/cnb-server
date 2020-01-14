@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const encrypt = require('../utils/crypto').encrypt;
+const encrypt = require('../../utils/crypto').encrypt;
 
 router.post('/', async (req, res) => {
   let { usr, email, pwd, rpwd, realname, IDcard, phone, carnum } = req.body.values;
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
   }
 
   // 用户查重
-  const Owner = require('../models/owner');
+  const Owner = require('../../models/owner/owner');
 
   let doc = null
   doc = await Owner.findOne({ email })
