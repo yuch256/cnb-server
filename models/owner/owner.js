@@ -10,10 +10,7 @@ let ownerSchema = new Schema({
   IDcard: { type: String, required: true },
   phone: { type: String, required: true },
   carnum: { type: String, required: true },
-  // date: {
-  //   type: Date,
-  //   default: Date.now
-  // }
+  type: { type: String, default: 1 }
 }, {
   versionKey: false,
   timestamps: true
