@@ -2,21 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let claimFormSchema = new Schema({
-  // usr: String,
-  // name: String,
-  // gend: String,
-  // IDcard: String,
-  // money: String,
-  // phone: String,
-  // insureNum: String,
-  // type: String,
-  // address: String,
   usr: { type: String, required: true },
   name: { type: String, required: true },
   gend: { type: String, required: true },
   IDcard: { type: String, required: true },
-  reqmoney: { type: String, required: true },
-  actmoney: { type: String },
+  reqmoney: { type: String, required: true },                     // 申请理赔金额
+  actmoney: { type: String },                                     // 实际理赔金额
   phone: { type: String, required: true },
   insureNum: { type: String, required: true, unique: true },
   type: { type: String, required: true },
@@ -39,7 +30,7 @@ let claimFormSchema = new Schema({
       }
     ],
   },
-  process: {
+  process: {                  // 理赔进度
     type: Number,
     default: 1,
   },

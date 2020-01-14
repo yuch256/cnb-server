@@ -8,13 +8,8 @@ const auth = require('../../utils/auth');
 
 let uploadprogress = 0;
 
-router.get('/', auth, (req, res) => {
-  res.send({ usr: req.curUsr, code: 1 });
-});
-
 router.post('/', auth, (req, res) => {
   // 根据当前时间、用户创建图片文件夹
-  // const curUsr = '2560';
   const curUsr = req.curUsr;
   let curPath = `public/img/claimform/${getCurrentTime()}_${curUsr}`;
   let exists = fs.existsSync(curPath);
@@ -58,7 +53,7 @@ function upload(req, res, curPath) {
       console.log('-> upload done\n');
       allFile.forEach((file, index) => {        // 遍历上传文件存入model
         let { name, path, size, type } = file;
-        size = `${(size / 1024).toFixed(2)}KB`
+        size = `${(size / 1024).toFixed(2)}KB`;
         if (index < divide) {                   // 第一种图片invoice
           let invoice = newClaimForm.img.invoice;
           invoice.push({ name, path, size, Type: type });
@@ -69,15 +64,16 @@ function upload(req, res, curPath) {
           newClaimForm.img.site = site;
         }
       });
+      newClaimForm.usr = req.curUsr;
       newClaimForm.save((err, doc) => {         // model存入db
-        if (err) return console.log(err)
+        if (err) return res.send({ msg: '申请失败！', code: 0 });
         console.log(JSON.stringify(doc, null, 2))
-        res.send({ state: 'success' });
+        res.send({ msg: '申请成功！', code: 1 });
       });
     })
     .on('error', function (err) {
       console.log(err);
-      res.send({ msg: '上传失败', state: 'error' });
+      res.send({ msg: '上传失败', code: 0 });
     });
 }
 
