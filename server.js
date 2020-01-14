@@ -11,8 +11,8 @@ const app = express();
 const signupRouter = require('./routes/sign/signup');
 const signinRouter = require('./routes/sign/signin');
 const signoutRouter = require('./routes/sign/signout');
-const ownerClaimformRouter = require('./routes/owner/claimform');
-const ownerHistorylistRouter = require('./routes/owner/historylist');
+// const ownerClaimformRouter = require('./routes/owner/claimform');
+// const ownerHistorylistRouter = require('./routes/owner/historylist');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,8 +24,8 @@ app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use('/signup', signupRouter);
 app.use('/signin', signinRouter);
 app.use('/signout', signoutRouter);
-app.use('/owner/claimform', ownerClaimformRouter);
-app.use('/owner/historylist', ownerHistorylistRouter);
+// app.use('/owner/claimform', ownerClaimformRouter);
+// app.use('/owner/historylist', ownerHistorylistRouter);
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 
@@ -42,7 +42,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.send('<h1>500</h1>');
+  res.send({ msg: '一个预料之外的错误' });
 });
 
 module.exports = app;
