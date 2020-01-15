@@ -9,7 +9,6 @@ require('./models/db');
 const app = express();
 
 const signoutRouter = require('./routes/sign/signout');
-const ownerSignRouter = require('./routes/owner/sign');
 const ownerClaimformRouter = require('./routes/owner/claimform');
 const ownerHistorylistRouter = require('./routes/owner/historylist');
 
@@ -21,7 +20,6 @@ app.use(logger('dev'));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
 app.use('/signout', signoutRouter);
-app.use('/owner/sign', ownerSignRouter);
 app.use('/owner/claimform', ownerClaimformRouter);
 app.use('/owner/historylist', ownerHistorylistRouter);
 
