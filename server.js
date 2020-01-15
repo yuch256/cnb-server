@@ -9,7 +9,10 @@ require('./models/db');
 const app = express();
 
 const signoutRouter = require('./routes/sign/signout');
+<<<<<<< HEAD
 const ownerSignRouter = require('./routes/owner/sign');
+=======
+>>>>>>> parent of f51ebe7... 身份认证中间件加入权限识别，更新接口
 const ownerClaimformRouter = require('./routes/owner/claimform');
 const ownerHistorylistRouter = require('./routes/owner/historylist');
 
@@ -21,7 +24,10 @@ app.use(logger('dev'));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
 app.use('/signout', signoutRouter);
+<<<<<<< HEAD
 app.use('/owner/sign', ownerSignRouter);
+=======
+>>>>>>> parent of f51ebe7... 身份认证中间件加入权限识别，更新接口
 app.use('/owner/claimform', ownerClaimformRouter);
 app.use('/owner/historylist', ownerHistorylistRouter);
 
@@ -40,7 +46,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.send({ msg: '一个预料之外的错误' });
+  res.send('<h1>500</h1>');
 });
 
 module.exports = app;

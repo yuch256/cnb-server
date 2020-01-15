@@ -10,7 +10,7 @@ const ownerSchema = new Schema({
   IDcard: { type: String, required: true },
   phone: { type: String, required: true },
   carnum: { type: String, required: true },
-  scope: { type: Number, default: 1 }       // 1：投保人，2：保险商，3：维修商
+  type: { type: String, default: 1 }
 }, {
   versionKey: false,
   timestamps: true
