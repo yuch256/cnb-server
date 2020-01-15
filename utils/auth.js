@@ -34,8 +34,8 @@ class Auth {
       }
 
       req.curUsr = decoded.usr;
-      req.scope =
-        next();
+      req.scope = decoded.scope;
+      next();
     }
   }
 }

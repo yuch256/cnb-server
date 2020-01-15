@@ -8,11 +8,12 @@ require('./models/db');
 
 const app = express();
 
-const signRouter = require('./routes/sign/sign');
+const ownerSignRouter = require('./routes/owner/sign');
 const ownerClaimformRouter = require('./routes/owner/claimform');
 const ownerHistorylistRouter = require('./routes/owner/historylist');
 const repairerSignRouter = require('./routes/repairer/sign');
 const insurerSignRouter = require('./routes/insurer/sign');
+const verifyIndexRouter = require('./routes/verify/index');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,11 +22,12 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-app.use('/sign', signRouter);
+app.use('/owner', ownerSignRouter);
 app.use('/owner/claimform', ownerClaimformRouter);
 app.use('/owner/historylist', ownerHistorylistRouter);
 app.use('/repairer', repairerSignRouter);
 app.use('/insurer', insurerSignRouter);
+app.use('/verify', verifyIndexRouter);
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 
