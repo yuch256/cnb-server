@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const secret = require('./config').secret_jwt;
+const { SECRET_JWT } = require('./config');
 
 class Auth {
   constructor(scope) {
@@ -17,7 +17,7 @@ class Auth {
       }
 
       try {
-        decoded = jwt.verify(t, secret);
+        decoded = jwt.verify(t, SECRET_JWT);
       } catch (error) {
         // 令牌不合法或者令牌过期
         if (error.name === 'TokenExpiredError') {
@@ -34,8 +34,8 @@ class Auth {
       }
 
       req.curUsr = decoded.usr;
-      req.scope = 
-      next();
+      req.scope =
+        next();
     }
   }
 }

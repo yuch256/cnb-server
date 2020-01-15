@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 
 const { decrypt, encrypt } = require('../../utils/crypto');
+const { TIME_JWT, SECRET_JWT } = require('../../utils/config');
 
 const Repairer = require('../../models/repairer/repairer');
 
@@ -17,7 +18,7 @@ router.post('/signin', async (req, res) => {
     if (r !== doc.pwd) {
       res.send({ msg: '用户名或密码错误！' });
     } else {
-      const t = jwt.sign({ usr, scope: doc.scope }, secret, { expiresIn: TIME_JWT });
+      const t = jwt.sign({ usr, scope: doc.scope }, SECRET_JWT, { expiresIn: TIME_JWT });
       res.send({ msg: '登录成功！', code: 1, token: t });
       console.log(`用户${usr}登录成功！类别${doc.scope}`)
     }
