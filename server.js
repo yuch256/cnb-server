@@ -8,11 +8,10 @@ require('./models/db');
 
 const app = express();
 
-const signupRouter = require('./routes/sign/signup');
-const signinRouter = require('./routes/sign/signin');
 const signoutRouter = require('./routes/sign/signout');
-// const ownerClaimformRouter = require('./routes/owner/claimform');
-// const ownerHistorylistRouter = require('./routes/owner/historylist');
+const ownerSignRouter = require('./routes/owner/sign');
+const ownerClaimformRouter = require('./routes/owner/claimform');
+const ownerHistorylistRouter = require('./routes/owner/historylist');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,11 +20,10 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-app.use('/signup', signupRouter);
-app.use('/signin', signinRouter);
 app.use('/signout', signoutRouter);
-// app.use('/owner/claimform', ownerClaimformRouter);
-// app.use('/owner/historylist', ownerHistorylistRouter);
+app.use('/owner/sign', ownerSignRouter);
+app.use('/owner/claimform', ownerClaimformRouter);
+app.use('/owner/historylist', ownerHistorylistRouter);
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 
