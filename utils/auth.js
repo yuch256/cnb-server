@@ -1,21 +1,43 @@
 const jwt = require('jsonwebtoken');
 const secret = require('./config').secret_jwt;
 
-module.exports = function (req, res, next) {
-  var t = req.headers.authorization;
-  // console.log('token: ' + t)
+class Auth {
+  constructor(scope) {
+    this.scope = scope || 0      // scope为0,将不会进行权限验证
+  }
 
-  if (t) {
-    jwt.verify(t, secret, (err, decoded) => {
-      // console.log('decoded: ', JSON.stringify(decoded))
-      if (err) {
-        res.status(401).json({ msg: "Invalid token", code: 0 });
-      } else {
-        req.curUsr = decoded.usr;
-        next();
+  get m() {
+    return async (req, res, next) => {
+      const t = req.headers.authorization;
+      let msg = 'Invalid token'
+      let decoded
+
+      if (!t) {
+        return res.status(401).json({ msg: "No token" });
       }
-    });
-  } else {
-    res.status(401).json({ msg: "No token", code: 0 });
+
+      try {
+        decoded = jwt.verify(t, secret);
+      } catch (error) {
+        // 令牌不合法或者令牌过期
+        if (error.name === 'TokenExpiredError') {
+          msg = 'Expired token'
+        }
+        return res.status(401).json({ msg });
+      }
+
+      // 权限验证
+      if (this.scope) {
+        if (decoded.scope !== this.scope) {
+          return res.status(401).json({ msg: "没有权限" });
+        }
+      }
+
+      req.curUsr = decoded.usr;
+      req.scope = 
+      next();
+    }
   }
 }
+
+module.exports = { Auth }

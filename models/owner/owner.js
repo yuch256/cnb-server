@@ -2,18 +2,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ownerSchema = new Schema({
-  usr: { type: String, required: true },
-  email: { type: String, required: true },
+  usr: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
   pwd: { type: String, required: true },
   salt: { type: String, required: true },
   realname: { type: String, required: true },
-  IDcard: { type: String, required: true },
-  phone: { type: String, required: true },
-  carnum: { type: String, required: true },
-  type: { type: String, default: 1 }
+  IDcard: { type: String, required: true, unique: true },
+  phone: { type: String, required: true, unique: true },
+  carnum: { type: String, required: true, unique: true },
+  scope: { type: Number, default: 1 }
 }, {
-  versionKey: false,
-  timestamps: true
+  versionKey: false,   //去掉版本锁 __v0
+  timestamps: true     //自动管理修改时间
 });
 
 /**

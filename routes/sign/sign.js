@@ -1,41 +1,49 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
-const encrypt = require('../../utils/crypto').encrypt;
-const decrypt = require('../../utils/crypto').decrypt;
+const { encrypt } = require('../../utils/crypto');
+const { decrypt } = require('../../utils/crypto');
 const secret = require('../../utils/config').secret_jwt;
 const { TIME_JWT } = require('../../utils/config');
-const Owner = require('../../models/owner/owner');
 const { Auth } = require('../../utils/auth');
 
-router.get('/verify', new Auth(1).m, async (req, res) => {
+const Owner = require('../../models/owner/owner');
+const Repairer = require('../../models/repairer/repairer');
+
+// 身份认证
+router.get('/verify', new Auth().m, async (req, res) => {
   res.send({ usr: req.curUsr, code: 1 });
 });
 
+// 登出
+router.get('/out', (req, res) => {
+  res.send({ code: 1 });
+});
+
+// 登录校验（三方公用接口）
 router.post('/in', async (req, res) => {
   let { usr, pwd } = req.body.values;
   console.log(JSON.stringify(req.body))
 
-  // 查询用户
   let doc = await Owner.findOne({ usr });
-  console.log(doc.scope)
 
   if (doc) {
-    // 密码校验
     let r = await decrypt(pwd, doc.salt);
     if (r !== doc.pwd) {
-      res.send({ msg: '用户名或密码错误！', code: 0 });
+      res.send({ msg: '用户名或密码错误！' });
     } else {
       const t = jwt.sign({ usr, scope: doc.scope }, secret, { expiresIn: TIME_JWT });
       res.send({ msg: '登录成功！', code: 1, token: t });
-      console.log(`用户${usr}登录成功！`)
+      console.log(`用户${usr}登录成功！类别${doc.scope}`)
     }
   } else {
-    res.send({ msg: '用户名或密码错误！', code: 0 });
+    res.send({ msg: '用户名或密码错误！' });
   }
 });
 
-router.post('/up', async (req, res) => {
+// 投保人注册
+router.post('/owner/up', async (req, res) => {
   let { usr, email, pwd, rpwd, realname, IDcard, phone, carnum } = req.body.values;
   console.log(JSON.stringify(req.body))
 
@@ -66,27 +74,34 @@ router.post('/up', async (req, res) => {
     return res.send({ msg: '车牌号格式有误！' });
   }
 
-  // 用户查重
-  const Owner = require('../../models/owner/owner');
-
-  let doc = null
-  doc = await Owner.findOne({ email })
-  if (doc) return res.send({ msg: '用户已注册！' })
-  doc = await Owner.findOne({ realname })
-  if (doc) return res.send({ msg: '用户已注册！' })
-  doc = await Owner.findOne({ IDcard })
-  if (doc) return res.send({ msg: '用户已注册！' })
-  doc = await Owner.findOne({ phone })
-  if (doc) return res.send({ msg: '用户已注册！' })
-  doc = await Owner.findOne({ carnum })
-  if (doc) return res.send({ msg: '用户已注册！' })
-
   // pwd加密
   let { r, salt } = await encrypt(pwd);
 
   // 添加用户
   const newOwner = new Owner({ usr, email, pwd: r, salt, realname, IDcard, phone, carnum });
   newOwner.save((err, doc) => {
+    if (err) return res.send({ msg: '注册失败!' });
+    res.send({ msg: '注册成功!', code: 1 });
+  });
+});
+
+// 维修商注册
+router.post('/repairer/up', async (req, res) => {
+  let { usr, pwd } = req.body;
+  console.log(JSON.stringify(req.body))
+
+  // 表单验证
+  if (!/^\w{5,15}$/.test(usr)) {
+    return res.send({ msg: '用户名格式有误！' });
+  }
+  if (!/^\w{6,15}$/.test(pwd)) {
+    return res.send({ msg: '密码格式有误！' });
+  }
+
+  let { r, salt } = await encrypt(pwd);
+
+  const newRepairer = new Repairer({ usr, pwd: r, salt });
+  newRepairer.save((err, doc) => {
     if (err) return res.send({ msg: '注册失败!' });
     res.send({ msg: '注册成功!', code: 1 });
   });
