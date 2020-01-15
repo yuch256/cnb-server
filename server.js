@@ -9,10 +9,7 @@ require('./models/db');
 const app = express();
 
 const signoutRouter = require('./routes/sign/signout');
-<<<<<<< HEAD
 const ownerSignRouter = require('./routes/owner/sign');
-=======
->>>>>>> parent of f51ebe7... 身份认证中间件加入权限识别，更新接口
 const ownerClaimformRouter = require('./routes/owner/claimform');
 const ownerHistorylistRouter = require('./routes/owner/historylist');
 
@@ -24,10 +21,7 @@ app.use(logger('dev'));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
 app.use('/signout', signoutRouter);
-<<<<<<< HEAD
 app.use('/owner/sign', ownerSignRouter);
-=======
->>>>>>> parent of f51ebe7... 身份认证中间件加入权限识别，更新接口
 app.use('/owner/claimform', ownerClaimformRouter);
 app.use('/owner/historylist', ownerHistorylistRouter);
 
