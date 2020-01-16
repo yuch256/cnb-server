@@ -3,15 +3,13 @@ const router = express.Router();
 const formidable = require('formidable');
 const fs = require('fs');
 
-const ClaimForm = require('../../models/owner/claimForm');
+const MaterialForm = require('../../models/repairer/materialForm');
 const { Auth } = require('../../utils/auth');
 
-let uploadprogress = 0;
-
-router.post('/', new Auth(1).m, (req, res) => {
+router.post('/', new Auth(2).m, (req, res) => {
   // 根据当前时间、用户创建图片文件夹
   const curUsr = req.curUsr;
-  let curPath = `public/img/claimform/${getCurrentTime()}_${curUsr}`;
+  let curPath = `public/img/materialform/${getCurrentTime()}_${curUsr}`;
   let exists = fs.existsSync(curPath);
   if (!exists) fs.mkdir(curPath, (err) => {
     if (err) return res.send({ msg: '提交失败' });
@@ -27,47 +25,32 @@ function upload(req, res, curPath) {
   form.keepExtensions = true;                      // 保留文件后缀
   form.maxFieldsSize = 2 * 1024 * 1024;            // 限制单个文件大小
   form.maxFields = 20 * 1024 * 1024;               // 限制所有文件大小总和
-  // 初始化理赔model
-  let newClaimForm = new ClaimForm();
 
-  let uploadprogress = 0;
+  let newMaterialForm = new MaterialForm();
   let allFile = [];
-  let divide = 0;
-  console.log('start:upload----' + uploadprogress);
 
-  form.parse(req);                              // 加上回调可以在这里做文件重命名之类的
+  form.parse(req);
 
   form
-    .on('field', function (field, value) {      // 上传的参数数据
-      if (field === 'divide') divide = value;   // 两种图片site和invoice的分界
-      else newClaimForm[field] = value;
-      console.log(field + ':' + value);
+    .on('field', function (field, value) {
+      console.log(field + ':' + value)
+      newMaterialForm[field] = value;
     })
-    .on('file', function (field, file) {        // 上传的文件数据
+    .on('file', function (field, file) {
       allFile.push(file);
     })
-    .on('progress', function (bytesReceived, bytesExpected) {
-      uploadprogress = bytesReceived / bytesExpected * 100;         // 计算上传进度
-    })
-    .on('end', function () {                    // 上传完成
-      console.log('-> upload done\n');
-      allFile.forEach((file, index) => {        // 遍历上传文件存入model
+    .on('end', function () {
+      allFile.forEach((file, index) => {
         let { name, path, size, type } = file;
         size = `${(size / 1024).toFixed(2)}KB`;
-        if (index < divide) {                   // 第一种图片invoice
-          let invoice = newClaimForm.img.invoice;
-          invoice.push({ name, path, size, Type: type });
-          newClaimForm.img.invoice = invoice;
-        } else {
-          let site = newClaimForm.img.site;
-          site.push({ name, path, size, Type: type });
-          newClaimForm.img.site = site;
-        }
+
+        let invoice = newMaterialForm.img.invoice;
+        invoice.push({ name, path, size, Type: type });
+        newMaterialForm.img.invoice = invoice;
       });
-      newClaimForm.usr = req.curUsr;
-      newClaimForm.save((err, doc) => {         // model存入db
+      
+      newMaterialForm.save((err, doc) => {
         if (err) return res.send({ msg: '申请失败！' });
-        console.log(JSON.stringify(doc, null, 2))
         res.send({ msg: '申请成功！', code: 1 });
       });
     })

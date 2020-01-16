@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let claimFormSchema = new Schema({
+const claimFormSchema = new Schema({
   usr: { type: String, required: true },
-  name: { type: String, required: true },
+  realname: { type: String, required: true },
   gend: { type: String, required: true },
   IDcard: { type: String, required: true },
   reqmoney: { type: String, required: true },                     // 申请理赔金额

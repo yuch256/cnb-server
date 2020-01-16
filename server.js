@@ -12,6 +12,7 @@ const ownerSignRouter = require('./routes/owner/sign');
 const ownerClaimformRouter = require('./routes/owner/claimform');
 const ownerHistorylistRouter = require('./routes/owner/historylist');
 const repairerSignRouter = require('./routes/repairer/sign');
+const repairerMaterialformRouter = require('./routes/repairer/materialform');
 const insurerSignRouter = require('./routes/insurer/sign');
 const verifyIndexRouter = require('./routes/verify/index');
 
@@ -26,6 +27,7 @@ app.use('/owner', ownerSignRouter);
 app.use('/owner/claimform', ownerClaimformRouter);
 app.use('/owner/historylist', ownerHistorylistRouter);
 app.use('/repairer', repairerSignRouter);
+app.use('/repairer/materialform', repairerMaterialformRouter);
 app.use('/insurer', insurerSignRouter);
 app.use('/verify', verifyIndexRouter);
 
