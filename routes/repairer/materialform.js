@@ -6,7 +6,7 @@ const fs = require('fs');
 const MaterialForm = require('../../models/repairer/materialForm');
 const { Auth } = require('../../utils/auth');
 
-router.post('/', new Auth(3).m, (req, res) => {
+router.post('/find', new Auth(3).m, (req, res) => {
   let { insureNum } = req.body;
 
   MaterialForm.find({ insureNum }, (err, doc) => {
