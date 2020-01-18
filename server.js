@@ -14,6 +14,8 @@ const ownerHistorylistRouter = require('./routes/owner/historylist');
 const repairerSignRouter = require('./routes/repairer/sign');
 const repairerMaterialformRouter = require('./routes/repairer/materialform');
 const insurerSignRouter = require('./routes/insurer/sign');
+const insurerApprovallistRouter = require('./routes/insurer/approvallist');
+const insurerDealRouter = require('./routes/insurer/deal');
 const verifyIndexRouter = require('./routes/verify/index');
 
 app.use(cors());
@@ -21,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(logger('dev'));
-app.use('/static', express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/owner', ownerSignRouter);
 app.use('/owner/claimform', ownerClaimformRouter);
@@ -29,6 +31,8 @@ app.use('/owner/historylist', ownerHistorylistRouter);
 app.use('/repairer', repairerSignRouter);
 app.use('/repairer/materialform', repairerMaterialformRouter);
 app.use('/insurer', insurerSignRouter);
+app.use('/insurer/approvallist', insurerApprovallistRouter);
+app.use('/insurer/deal', insurerDealRouter);
 app.use('/verify', verifyIndexRouter);
 
 app.get('/favicon.ico', (req, res) => res.status(204));

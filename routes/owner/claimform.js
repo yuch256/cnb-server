@@ -33,6 +33,7 @@ function upload(req, res, curPath) {
   let uploadprogress = 0;
   let allFile = [];
   let divide = 0;
+  let insureNumError = false;
   console.log('start:upload----' + uploadprogress);
 
   form.parse(req);                              // 加上回调可以在这里做文件重命名之类的
@@ -40,6 +41,8 @@ function upload(req, res, curPath) {
   form
     .on('field', function (field, value) {      // 上传的参数数据
       if (field === 'divide') divide = value;   // 两种图片site和invoice的分界
+      if (field === 'insureNum' && !value.split(' ')[1])
+        insureNumError = true;
       else newClaimForm[field] = value;
       console.log(field + ':' + value);
     })
@@ -51,10 +54,11 @@ function upload(req, res, curPath) {
     })
     .on('end', function () {                    // 上传完成
       console.log('-> upload done\n');
+      if (insureNumError) return res.send({ msg: '保险单号格式有误' });
       allFile.forEach((file, index) => {        // 遍历上传文件存入model
         let { name, path, size, type } = file;
         size = `${(size / 1024).toFixed(2)}KB`;
-        if (index < divide) {                   // 第一种图片invoice
+        if (index > divide) {                   // invoice图片
           let invoice = newClaimForm.img.invoice;
           invoice.push({ name, path, size, Type: type });
           newClaimForm.img.invoice = invoice;

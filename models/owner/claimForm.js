@@ -12,6 +12,7 @@ const claimFormSchema = new Schema({
   insureNum: { type: String, required: true, unique: true },
   type: { type: String, required: true },
   address: { type: String, required: true },
+  process: { type: Number, default: 1, },                         // 理赔进度
   img: {
     invoice: [
       {
@@ -29,10 +30,6 @@ const claimFormSchema = new Schema({
         Type: String,
       }
     ],
-  },
-  process: {                  // 理赔进度
-    type: Number,
-    default: 1,
   },
 }, {
   versionKey: false,

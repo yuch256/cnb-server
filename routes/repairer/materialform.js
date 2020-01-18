@@ -6,6 +6,15 @@ const fs = require('fs');
 const MaterialForm = require('../../models/repairer/materialForm');
 const { Auth } = require('../../utils/auth');
 
+router.post('/', new Auth(3).m, (req, res) => {
+  let { insureNum } = req.body;
+
+  MaterialForm.find({ insureNum }, (err, doc) => {
+    if (err) return res.send({ msg: '查询失败！请刷新重试' });
+    res.send({ data: doc, code: 1 });
+  });
+});
+
 router.post('/', new Auth(2).m, (req, res) => {
   // 根据当前时间、用户创建图片文件夹
   const curUsr = req.curUsr;
@@ -28,18 +37,22 @@ function upload(req, res, curPath) {
 
   let newMaterialForm = new MaterialForm();
   let allFile = [];
+  let insureNumError = false;
 
   form.parse(req);
 
   form
     .on('field', function (field, value) {
       console.log(field + ':' + value)
+      if (field === 'insureNum' && !value.split(' ')[1])
+        insureNumError = true;
       newMaterialForm[field] = value;
     })
     .on('file', function (field, file) {
       allFile.push(file);
     })
     .on('end', function () {
+      if (insureNumError) return res.send({ msg: '保险单号格式有误' });
       allFile.forEach((file, index) => {
         let { name, path, size, type } = file;
         size = `${(size / 1024).toFixed(2)}KB`;
@@ -48,7 +61,7 @@ function upload(req, res, curPath) {
         invoice.push({ name, path, size, Type: type });
         newMaterialForm.img.invoice = invoice;
       });
-      
+
       newMaterialForm.save((err, doc) => {
         if (err) return res.send({ msg: '申请失败！' });
         res.send({ msg: '申请成功！', code: 1 });
